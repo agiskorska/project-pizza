@@ -57,7 +57,7 @@
     constructor(id, data){
       const thisProduct = this;
       thisProduct.id = id;
-      thisProduct.data = data;   // co to wlasciwie znaczy? przekazujemy na przyklad 'ingredients'
+      thisProduct.data = data;
       thisProduct.renderInMenu();
       thisProduct.getElements();
       thisProduct.initAccordion();
@@ -81,6 +81,7 @@
       thisProduct.formInputs = thisProduct.form.querySelectorAll(select.all.formInputs);
       thisProduct.cartButton = thisProduct.element.querySelector(select.menuProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
     }
 
     initAccordion() {
@@ -91,7 +92,6 @@
         const clickedElement = this;
         const activeProducts = document.querySelectorAll('article.'+classNames.menuProduct.wrapperActive);
         for(let activeProduct of activeProducts) {
-          console.log(activeProduct);
           if (activeProduct && activeProduct!=thisProduct.element) {
             activeProduct.classList.remove('active');
           }
@@ -129,8 +129,15 @@
 
         for(let optionId in param.options){
           const option = param.options[optionId];
-          console.log(option);
+          const selector = `.${paramId}-${optionId}`;
+          const image = thisProduct.imageWrapper.querySelector(selector);
+          if(image){
+            image.classList.remove(classNames.menuProduct.wrapperActive);
+          }
           if(formData[paramId].includes(optionId)) {
+            if (image){
+              image.classList.add(classNames.menuProduct.wrapperActive);
+            }
             if(!option.default){
               price += option.price;
             }
