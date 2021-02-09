@@ -249,14 +249,27 @@
       const thisApp = this;
 
       for(let productData in thisApp.data.products) {
-        new Product(productData, thisApp.data.products[productData]);
+        new Product(thisApp.data.products[productData].id, thisApp.data.products[productData]);
       }
 
     },
     initData: function(){
       const thisApp = this;
 
-      thisApp.data = dataSource;
+      thisApp.data = {};
+
+      const url = settings.db.url + '/' + settings.db.product;
+
+      fetch(url)
+        .then(function(rawResponse){
+          return rawResponse.json();
+        })
+        .then(function(parsedResponse){
+          console.log('parsedResponse: ', parsedResponse);
+          thisApp.data.products = parsedResponse;
+          thisApp.initMenu();
+        });
+      console.log('thisApp.data', JSON.stringify(thisApp.data));
     },
     initCart: function(){
       const thisApp = this;
@@ -273,7 +286,6 @@
       console.log('templates:', templates);
 
       thisApp.initData();
-      thisApp.initMenu();
       thisApp.initCart();
     },
   };
@@ -360,6 +372,8 @@
       thisCart.dom.subtotalPrice = thisCart.dom.wrapper.querySelector(select.cart.subtotalPrice);
       thisCart.dom.totalPrice = thisCart.dom.wrapper.querySelectorAll(select.cart.totalPrice);
       thisCart.dom.deliveryFee = thisCart.dom.wrapper.querySelector(select.cart.deliveryFee);
+      thisCart.dom.form = thisCart.dom.wrapper.querySelector(select.cart.form);
+
     }
 
     initActions() {
@@ -374,6 +388,10 @@
       });
       thisCart.dom.productList.addEventListener('remove', function(event){
         thisCart.remove(event.detail.cartProduct);
+      });
+      thisCart.dom.form.addEventListener('submit', function(event){
+        event.preventDefault();
+        thisCart.sendOrder();
       });
     }
 
@@ -415,10 +433,9 @@
       }
     }
 
-    remove(arg) {
+    remove(arg){
       const thisCart = this;
       let productIndex = '';
-      debugger;
       for(let product of thisCart.products){
         if(product == arg){
           console.log(product.ui, arg.ui);
@@ -429,12 +446,40 @@
       delete thisCart.products[productIndex];
       thisCart.update();
     }
+
+    sendOrder(){
+      const thisCart = this;
+      const url = settings.db.url + '/' + settings.db.order;
+      const payload = {};
+      payload.products = [];
+
+      payload.address = thisCart.dom.form.querySelector(select.cart.address).value;
+      payload.phone = thisCart.dom.form.querySelector(select.cart.phone).value;
+      payload.totalPrice = thisCart.totalPrice;
+      payload.deliveryFee = settings.cart.defaultDeliveryFee;
+      payload.subtotalPrice = payload.totalPrice - payload.deliveryFee;
+      payload.totalNumber = thisCart.dom.totalNumber.innerHTML;
+      for(let prod of thisCart.products) {
+        payload.products.push(prod.getData());
+      }
+      console.log('ordersent: ', payload);
+      const options =  {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      };
+
+      fetch(url, options);
+
+    }
   }
 
   class CartProduct{
     constructor(menuProduct, element){
       const thisCartProduct = this;
-      thisCartProduct.ui = Math.random();
+      thisCartProduct.ui = Math.ceil(Math.random()*10000000);
       thisCartProduct.id = menuProduct.id;
       thisCartProduct.amount = menuProduct.amount;
       thisCartProduct.name = menuProduct.name;
@@ -457,6 +502,18 @@
       thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
     }
 
+    getData(){
+      const thisCartProduct = this;
+      const data = {};
+      data.id = thisCartProduct.id;
+      data.amount = thisCartProduct.amount;
+      data.price = thisCartProduct.price;
+      data.priceSingle = thisCartProduct.priceSingle;
+      data.name = thisCartProduct.name;
+      data.params = thisCartProduct.params;
+      return data;
+    }
+
     remove(){
       const thisCartProduct = this;
 
@@ -467,7 +524,6 @@
         },
       });
       thisCartProduct.dom.wrapper.dispatchEvent(event);
-      console.log('This will be removed');
     }
 
     initAmountWidget(){
