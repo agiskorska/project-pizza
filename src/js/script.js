@@ -72,6 +72,11 @@
     cart: {
       defaultDeliveryFee: 20,
     },
+    db: {
+      url: '//localhost:3131',
+      product: 'product',
+      order: 'order',
+    },
   };
 
   const templates = {
@@ -413,13 +418,14 @@
     remove(arg) {
       const thisCart = this;
       let productIndex = '';
-      arg.dom.wrapper.innerHTML = '';
-      console.log(arg, thisCart.products);
+      debugger;
       for(let product of thisCart.products){
         if(product == arg){
+          console.log(product.ui, arg.ui);
           productIndex = thisCart.products.indexOf(product);
         }
       }
+      arg.dom.wrapper.innerHTML = '';
       delete thisCart.products[productIndex];
       thisCart.update();
     }
@@ -428,6 +434,7 @@
   class CartProduct{
     constructor(menuProduct, element){
       const thisCartProduct = this;
+      thisCartProduct.ui = Math.random();
       thisCartProduct.id = menuProduct.id;
       thisCartProduct.amount = menuProduct.amount;
       thisCartProduct.name = menuProduct.name;
