@@ -27,6 +27,12 @@
         ],
         "no-console": [
             "off"
+        ],
+        "space-before-blocks": [
+          "error"
+        ],
+        "keyword-spacing": [
+          "error"
         ]
     }
 }

@@ -1,8 +1,8 @@
 import AmountWidget from './AmountWidget.js';
 import {select} from '../settings.js';
 
-class CartProduct{
-  constructor(menuProduct, element){
+class CartProduct {
+  constructor(menuProduct, element) {
     const thisCartProduct = this;
     thisCartProduct.ui = Math.ceil(Math.random()*10000000);
     thisCartProduct.id = menuProduct.id;
@@ -17,7 +17,7 @@ class CartProduct{
     thisCartProduct.initActions();
   }
 
-  getElements(element){
+  getElements(element) {
     const thisCartProduct = this;
     thisCartProduct.dom = {};
     thisCartProduct.dom.wrapper = element;
@@ -27,7 +27,7 @@ class CartProduct{
     thisCartProduct.dom.remove = thisCartProduct.dom.wrapper.querySelector(select.cartProduct.remove);
   }
 
-  getData(){
+  getData() {
     const thisCartProduct = this;
     const data = {};
     data.id = thisCartProduct.id;
@@ -39,7 +39,7 @@ class CartProduct{
     return data;
   }
 
-  remove(){
+  remove() {
     const thisCartProduct = this;
 
     const event = new CustomEvent('remove', {
@@ -51,7 +51,7 @@ class CartProduct{
     thisCartProduct.dom.wrapper.dispatchEvent(event);
   }
 
-  initAmountWidget(){
+  initAmountWidget() {
     const thisCartProduct = this;
     thisCartProduct.amountWidget = new AmountWidget(thisCartProduct.dom.amountWidget);
 
@@ -63,12 +63,12 @@ class CartProduct{
     });
   }
 
-  initActions(){
+  initActions() {
     const thisCartProduct = this;
-    thisCartProduct.dom.edit.addEventListener('click', function(event){
+    thisCartProduct.dom.edit.addEventListener('click', function(event) {
       event.preventDefault();
     });
-    thisCartProduct.dom.remove.addEventListener('click', function(event){
+    thisCartProduct.dom.remove.addEventListener('click', function(event) {
       event.preventDefault();
       thisCartProduct.remove();
     });

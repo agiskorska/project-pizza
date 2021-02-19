@@ -2,8 +2,8 @@ import {select, classNames, templates, settings} from '../settings.js';
 import utils from '../utils.js';
 import CartProduct from './CartProduct.js';
 
-class Cart{
-  constructor(element){
+class Cart {
+  constructor(element) {
     const thisCart = this;
 
     thisCart.products = [];
@@ -11,7 +11,7 @@ class Cart{
     thisCart.initActions();
   }
 
-  getElements(element){
+  getElements(element) {
     const thisCart = this;
 
     thisCart.dom = {};
@@ -29,23 +29,23 @@ class Cart{
   initActions() {
     const thisCart = this;
     const clickableTrigger = thisCart.dom.toggleTrigger;
-    clickableTrigger.addEventListener('click', function(){
+    clickableTrigger.addEventListener('click', function() {
       const clickedElement = this;
       clickedElement.parentNode.classList.toggle(classNames.cart.wrapperActive);
     });
-    thisCart.dom.productList.addEventListener('updated', function(){
+    thisCart.dom.productList.addEventListener('updated', function() {
       thisCart.update();
     });
-    thisCart.dom.productList.addEventListener('remove', function(event){
+    thisCart.dom.productList.addEventListener('remove', function(event) {
       thisCart.remove(event.detail.cartProduct);
     });
-    thisCart.dom.form.addEventListener('submit', function(event){
+    thisCart.dom.form.addEventListener('submit', function(event) {
       event.preventDefault();
       thisCart.sendOrder();
     });
   }
 
-  add(menuProduct){
+  add(menuProduct) {
     const thisCart = this;
     const generatedHTML = templates.cartProduct(menuProduct);
     const generatedDOM = utils.createDOMFromHTML(generatedHTML);
@@ -55,39 +55,39 @@ class Cart{
     thisCart.update();
   }
 
-  update(){
+  update() {
     const thisCart = this;
     const deliveryFee = settings.cart.defaultDeliveryFee;
     let totalNumber = 0;
     let subtotalPrice =  0;
     thisCart.totalPrice = 0;
 
-    for(let product of thisCart.products){
-      if(product){
+    for (let product of thisCart.products) {
+      if (product) {
         totalNumber += product.amount;
         subtotalPrice += product.amount * product.priceSingle;
       }
     }
-    if(subtotalPrice != 0){
+    if (subtotalPrice != 0) {
       thisCart.totalPrice = subtotalPrice + deliveryFee;
     }
-    for(let element of thisCart.dom.totalPrice){
+    for (let element of thisCart.dom.totalPrice) {
       element.innerHTML = thisCart.totalPrice;
     }
     thisCart.dom.subtotalPrice.innerHTML = subtotalPrice;
     thisCart.dom.totalNumber.innerHTML = totalNumber;
-    if(thisCart.totalPrice != 0){
+    if (thisCart.totalPrice != 0) {
       thisCart.dom.deliveryFee.innerHTML = deliveryFee;
     } else {
       thisCart.dom.deliveryFee.innerHTML = 0;
     }
   }
 
-  remove(arg){
+  remove(arg) {
     const thisCart = this;
     let productIndex = '';
-    for(let product of thisCart.products){
-      if(product == arg){
+    for (let product of thisCart.products) {
+      if (product == arg) {
         console.log(product.ui, arg.ui);
         productIndex = thisCart.products.indexOf(product);
       }
@@ -97,7 +97,7 @@ class Cart{
     thisCart.update();
   }
 
-  sendOrder(){
+  sendOrder() {
     const thisCart = this;
     const url = settings.db.url + '/' + settings.db.order;
     const payload = {};
@@ -109,7 +109,7 @@ class Cart{
     payload.deliveryFee = settings.cart.defaultDeliveryFee;
     payload.subtotalPrice = payload.totalPrice - payload.deliveryFee;
     payload.totalNumber = thisCart.dom.totalNumber.innerHTML;
-    for(let prod of thisCart.products) {
+    for (let prod of thisCart.products) {
       payload.products.push(prod.getData());
     }
     console.log('ordersent: ', payload);
