@@ -148,6 +148,10 @@
     transform-origin: 50% 50%;
     cursor: pointer;
 
+    &.active {
+      background-color: $color-success;
+    }
+
     &--round {
       border-radius: 50%;
 
