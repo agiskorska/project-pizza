@@ -245,7 +245,7 @@ class Booking {
     const booking = {};
     booking.starters = [];
 
-    booking.id = Math.floor(Math.random()*10000); //jak poprosic o id z bazy?
+    booking.id = Math.floor(Math.random()*10000);
     booking.date = thisBooking.date;
     booking.hour = utils.numberToHour(thisBooking.hour);
     booking.table = parseInt(thisBooking.table);
